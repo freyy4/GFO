@@ -1,0 +1,11 @@
+<form method="GET" action="{{ $domain === 'overview' ? route('dashboard') : route('dashboards.'.$domain) }}" class="brand-panel grid items-end gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Filter dashboard">
+@if($domain !== 'overview')
+@foreach(['from' => 'Tanggal awal', 'to' => 'Tanggal akhir'] as $key => $caption)
+<div><label for="{{ $key }}" class="brand-label">{{ $caption }}</label><input class="brand-input" type="date" id="{{ $key }}" name="{{ $key }}" required value="{{ $filters[$key] }}" aria-describedby="{{ $key }}-error"><p class="brand-error" id="{{ $key }}-error">@error($key){{ $message }}@enderror</p></div>
+@endforeach
+@endif
+<div><label for="unit" class="brand-label">Unit</label><select class="brand-input" name="unit" id="unit" aria-describedby="unit-help unit-error"><option value="">Semua unit yang diizinkan</option>@foreach($units as $unit)<option value="{{ $unit->id }}" @selected((string)($filters['unit'] ?? '') === (string)$unit->id)>{{ $unit->name }}</option>@endforeach</select><p class="brand-help" id="unit-help">Pilihan dibatasi oleh hak akses dashboard.</p><p class="brand-error" id="unit-error">@error('unit'){{ $message }}@enderror</p></div>
+<div><label class="brand-label" for="search">{{ match($domain) {'overview' => 'Cari kode/nama unit', 'operations' => 'Cari nomor pesanan', 'hr' => 'Cari nomor/nama karyawan', default => 'Cari kode/nama campaign'} }}</label><input class="brand-input" id="search" name="search" maxlength="255" value="{{ $filters['search'] ?? '' }}" aria-describedby="search-error"><p id="search-error" class="brand-error">@error('search'){{ $message }}@enderror</p></div>
+<div><label class="brand-label" for="status">Status daftar</label><select class="brand-input" id="status" name="status"><option value="">Semua status</option>@foreach($statuses as $status)<option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ $status }}</option>@endforeach</select></div>
+<div class="flex flex-wrap items-center gap-4"><button type="submit" class="brand-primary">Terapkan</button><a class="brand-link" href="{{ $domain === 'overview' ? route('dashboard') : route('dashboards.'.$domain) }}">Reset filter</a></div>
+</form>

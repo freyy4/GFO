@@ -1,0 +1,27 @@
+@csrf
+<section class="brand-panel space-y-5">
+    <h2 class="text-lg font-semibold">Informasi unit</h2>
+    <p class="brand-help">Organization: {{ auth()->user()->organization->name }}. Kolom bertanda * wajib diisi.</p>
+    <div class="grid gap-5 sm:grid-cols-2">
+    @foreach(['code' => ['Kode unit', 50], 'name' => ['Nama unit', 255]] as $field => [$label, $max])
+        <div><label class="brand-label" for="{{ $field }}">{{ $label }} *</label><input class="brand-input" id="{{ $field }}" name="{{ $field }}" required maxlength="{{ $max }}" value="{{ old($field, $unit->$field) }}" aria-invalid="{{ $errors->has($field) ? 'true' : 'false' }}" aria-describedby="{{ $field }}-error" @if($field === 'code') pattern="[A-Z0-9-]+" @endif><p id="{{ $field }}-error" class="brand-error">@error($field){{ $message }}@enderror</p></div>
+    @endforeach
+    @foreach(['type' => ['Tipe unit', ['BOOTH' => 'Booth', 'CENTRAL_KITCHEN' => 'Central Kitchen', 'WAREHOUSE' => 'Warehouse'], 'BOOTH'], 'status' => ['Status', ['ACTIVE' => 'Aktif', 'INACTIVE' => 'Nonaktif'], 'ACTIVE']] as $field => [$label, $options, $default])
+        <div><label class="brand-label" for="{{ $field }}">{{ $label }} *</label><select class="brand-input" id="{{ $field }}" name="{{ $field }}" required aria-invalid="{{ $errors->has($field) ? 'true' : 'false' }}" aria-describedby="{{ $field }}-error">@foreach($options as $value => $text)<option value="{{ $value }}" @selected(old($field, $unit->$field ?? $default) === $value)>{{ $text }}</option>@endforeach</select><p id="{{ $field }}-error" class="brand-error">@error($field){{ $message }}@enderror</p></div>
+    @endforeach
+    @foreach(['brand_id' => ['Brand', $brands], 'parent_id' => ['Unit induk', $parents]] as $field => [$label, $options])
+        <div><label class="brand-label" for="{{ $field }}">{{ $label }}</label><select class="brand-input" id="{{ $field }}" name="{{ $field }}" aria-invalid="{{ $errors->has($field) ? 'true' : 'false' }}" aria-describedby="{{ $field }}-error"><option value="">Tanpa {{ strtolower($label) }}</option>@if($field === 'parent_id' && $unit->parent_id && ! $options->contains('id', $unit->parent_id))<option value="{{ $unit->parent_id }}" @selected((string) old($field, $unit->parent_id) === (string) $unit->parent_id)>Induk saat ini (akses terbatas)</option>@endif @foreach($options as $option)<option value="{{ $option->id }}" @selected((string) old($field, $unit->$field) === (string) $option->id)>{{ $option->name }} ({{ $option->code }})</option>@endforeach</select><p id="{{ $field }}-error" class="brand-error">@error($field){{ $message }}@enderror</p></div>
+    @endforeach
+    </div><p class="brand-help">Kode unik dalam organization, menggunakan huruf kapital, angka, dan tanda hubung.</p>
+</section>
+<section class="brand-panel space-y-5"><h2 class="text-lg font-semibold">Lokasi dan jam operasional</h2>
+    <div><label for="address" class="brand-label">Alamat</label><textarea id="address" name="address" class="brand-input" rows="3" maxlength="5000" aria-invalid="{{ $errors->has('address') ? 'true' : 'false' }}" aria-describedby="address-error">{{ old('address', $unit->address) }}</textarea><p id="address-error" class="brand-error">@error('address'){{ $message }}@enderror</p></div>
+    <div class="grid gap-5 sm:grid-cols-2">
+    @foreach(['city' => ['Kota', 'text', null, null, null], 'latitude' => ['Latitude', 'number', -90, 90, '0.0000001'], 'longitude' => ['Longitude', 'number', -180, 180, '0.0000001'], 'geofence_radius_m' => ['Radius geofence (meter)', 'number', 1, 4294967295, 1], 'opens_at' => ['Jam buka', 'time', null, null, null], 'closes_at' => ['Jam tutup', 'time', null, null, null], 'timezone' => ['Zona waktu *', 'text', null, null, null]] as $field => [$label, $type, $min, $max, $step])
+        @php($value = in_array($field, ['opens_at', 'closes_at']) ? $unit->$field?->format('H:i') : ($field === 'timezone' ? ($unit->timezone ?? auth()->user()->organization->timezone) : $unit->$field))
+        <div><label for="{{ $field }}" class="brand-label">{{ $label }}</label><input id="{{ $field }}" name="{{ $field }}" type="{{ $type }}" class="brand-input" value="{{ old($field, $value) }}" @if($min !== null) min="{{ $min }}" max="{{ $max }}" step="{{ $step }}" @endif @if($field === 'timezone') required maxlength="50" @endif @if($field === 'city') maxlength="100" @endif aria-invalid="{{ $errors->has($field) ? 'true' : 'false' }}" aria-describedby="{{ $field }}-error"><p id="{{ $field }}-error" class="brand-error">@error($field){{ $message }}@enderror</p></div>
+    @endforeach
+    </div><p class="brand-help">Zona waktu contoh: Asia/Jakarta. Isi latitude dan longitude berpasangan. Jam buka dan tutup boleh melewati tengah malam.</p>
+</section>
+<section class="brand-panel"><label for="settings" class="brand-label">Pengaturan tambahan (JSON, opsional)</label><textarea id="settings" name="settings" class="brand-input font-mono" rows="4" maxlength="10000" aria-invalid="{{ $errors->has('settings') ? 'true' : 'false' }}" aria-describedby="settings-error">{{ old('settings', $unit->settings !== null ? json_encode($unit->settings, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '') }}</textarea><p id="settings-error" class="brand-error">@error('settings'){{ $message }}@enderror</p></section>
+<div class="flex flex-wrap items-center gap-4"><button type="submit" class="brand-primary">Simpan unit</button><a class="brand-link" href="{{ $unit->exists ? route('operational-units.show', $unit) : route('operational-units.index') }}">Batal</a></div>

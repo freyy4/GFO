@@ -1,0 +1,2 @@
+@php($status = $record->getAttribute('deleted_at') ? 'ARCHIVED' : ($record->getAttribute('approval_status') ?? $record->getAttribute('status')))
+@if($status)<span @class(['inline-flex rounded-full px-2.5 py-1 text-xs font-semibold', 'bg-green-100 text-green-800' => in_array($status, ['ACTIVE', 'APPROVED']), 'bg-amber-100 text-amber-900' => $status === 'PENDING', 'bg-stone-100 text-stone-700' => !in_array($status, ['ACTIVE', 'APPROVED', 'PENDING'])])>{{ $status }}</span>@endif

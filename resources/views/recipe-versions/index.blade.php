@@ -1,0 +1,10 @@
+@extends('app')
+@section('title', 'Versi Recipe & BOM')
+@section('page-heading', 'Versi Recipe & BOM')
+@section('page-description', 'Kelola versi sesuai cakupan akses Anda.')
+@section('content')
+@php($kind = 'recipe-versions')
+@php($routePrefix = 'recipes.versions')
+@php($parent = $recipe)
+@include('product-recipes._index', ['records' => $versions, 'label' => 'versi'])
+@endsection

@@ -1,0 +1,1 @@
+<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $unit->status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-stone-100 text-stone-700' }}">{{ $unit->status === 'ACTIVE' ? 'Aktif' : 'Nonaktif' }}</span>

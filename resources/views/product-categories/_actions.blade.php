@@ -1,0 +1,2 @@
+@if($abilities['update'])<a class="brand-link" href="{{ route('product-categories.edit', $category) }}" aria-label="Edit kategori {{ $category->name }}">Edit</a>@endif
+@if($abilities['delete'])<form method="POST" action="{{ route('product-categories.destroy', $category) }}" data-confirm="Hapus kategori {{ $category->name }} secara permanen? Kategori dengan anak atau produk tidak dapat dihapus.">@csrf @method('DELETE')<button type="submit" class="brand-link" aria-label="Hapus kategori {{ $category->name }}">Hapus</button></form>@endif

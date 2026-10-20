@@ -1,0 +1,10 @@
+@extends('app')
+@section('title', 'Varian Produk')
+@section('page-heading', 'Varian Produk')
+@section('page-description', 'Kelola varian sesuai cakupan akses Anda.')
+@section('content')
+@php($kind = 'product-variants')
+@php($routePrefix = 'products.variants')
+@php($parent = $product)
+@include('product-recipes._index', ['records' => $variants, 'label' => 'varian'])
+@endsection

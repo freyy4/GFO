@@ -1,0 +1,2 @@
+@php($status = $record->status ?? ($module === 'kpi-definitions' ? ($record->is_active ? 'ACTIVE' : 'INACTIVE') : 'TERCATAT'))
+<span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ in_array($status,['APPROVED','PAID','SETTLED','ACTIVE']) ? 'bg-green-100 text-green-800' : (in_array($status,['REJECTED','CANCELLED','INACTIVE']) ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-900') }}">{{ $status }}</span>
